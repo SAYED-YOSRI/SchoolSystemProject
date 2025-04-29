@@ -1,0 +1,41 @@
+﻿@model Student
+
+@{
+    ViewData["Title"] = "Create Student";
+}
+
+<h1>Create Student</h1>
+
+<form method="post" action="/Admin/saveCreate">
+
+    <div>
+        <label>Full Name</label>
+        <input name="FullName" id="FullName" value="@Model?.FullName" type="text" class="form-control" />
+    </div>
+
+    <div>
+        <label>Email</label>
+        <input name="Email" id="Email" value="@Model?.Email" type="email" class="form-control" />
+    </div>
+
+    <div>
+        <label>Password</label>
+        <input name="Password" id="Password" value="@Model?.password" type="password" class="form-control" />
+    </div>
+
+    <div>
+        <label>Address</label>
+        <input name="addres" id="addres" value="@Model?.addres" type="text" class="form-control" />
+    </div>
+
+    <div>
+        <label>Phone Number</label>
+        <input name="PhoneNumber" id="PhoneNumber" value="@Model?.phoneNumber" type="text" class="form-control" />
+    </div>
+
+    <div>
+        <input name="CreatedAt" id="CreatedAt" value="@Model?.CreatedAt.ToString("yyyy-MM-dd")" type="hidden" />
+    </div>
+
+    <input type="submit" value="Create" class="btn btn-primary" />
+</form>

@@ -1,0 +1,54 @@
+﻿@model List<Student>
+@{
+    ViewData["Title"] = "ShowAllStudents";
+}
+
+<h1>ShowAllStudents</h1>
+
+<table class="table table-hover table-bordered">
+    <tr>
+        <th>Id</th>
+        <th>Full Name</th>
+        <th>Email</th>
+        <th>password </th>
+        <th>phone Number </th>
+        <th>Addres </th>
+        <th>Courses</th>
+    </tr>
+    @foreach (var item in Model)
+    {
+
+        <tr>
+            <td>@item.Id</td>
+            <td>@item.FullName</td>
+            <td>@item.Email</td>
+            <td>@item.password</td>
+            <td>@item.phoneNumber</td>
+            <td>@item.addres</td>
+            <td>
+                @if (item.Enrollments != null && item.Enrollments.Any() )
+                {
+                    <select class="form-control" >
+                            @foreach (var enrollment in item.Enrollments)
+                            {
+                                <option>@enrollment.Course.Title</option>
+                            }
+                    </select>
+                }
+                else
+                {
+                    <span>No Courses</span>
+                }
+                
+            </td>
+        </tr>
+    }
+
+</table>
+
+<a href="/Admin/createStudent" class="btn btn-success"> Add </a>
+
+
+
+
+
