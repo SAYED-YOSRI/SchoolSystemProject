@@ -1,5 +1,6 @@
 ﻿@model Student
 
+
 @{
     ViewData["Title"] = "Create Student";
 }
@@ -10,32 +11,35 @@
 
     <div>
         <label>Full Name</label>
-        <input name="FullName" id="FullName" value="@Model?.FullName" type="text" class="form-control" />
+        <input name="FullName" id="FullName" value="@Model?.FullName" type="text" required class="form-control" />
     </div>
 
     <div>
         <label>Email</label>
-        <input name="Email" id="Email" value="@Model?.Email" type="email" class="form-control" />
+        <input name="Email" id="Email" value="@Model?.Email" type="email" required class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
     </div>
 
     <div>
         <label>Password</label>
-        <input name="Password" id="Password" value="@Model?.password" type="password" class="form-control" />
+        <input name="Password" id="Password" value="@Model?.password" type="password" required class="form-control" />
     </div>
 
     <div>
         <label>Address</label>
-        <input name="addres" id="addres" value="@Model?.addres" type="text" class="form-control" />
+        <input name="addres" id="addres" value="@Model?.addres" type="text" required class="form-control" />
     </div>
 
     <div>
         <label>Phone Number</label>
-        <input name="PhoneNumber" id="PhoneNumber" value="@Model?.phoneNumber" type="text" class="form-control" />
+        <input name="PhoneNumber" id="PhoneNumber" value="@Model?.phoneNumber" type="text" required class="form-control" />
     </div>
 
     <div>
         <input name="CreatedAt" id="CreatedAt" value="@Model?.CreatedAt.ToString("yyyy-MM-dd")" type="hidden" />
     </div>
+
+  
 
     <input type="submit" value="Create" class="btn btn-primary" />
 </form>
