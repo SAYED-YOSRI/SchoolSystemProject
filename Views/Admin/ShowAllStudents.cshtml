@@ -16,6 +16,7 @@
         <th>phone Number </th>
         <th>Addres </th>
         <th>Courses</th>
+        <th>Delete Student </th>
     </tr>
     @foreach (var item in Model.Students)
     {
@@ -43,6 +44,13 @@
                 }
                 
             </td>
+
+            <td>
+                <form asp-action="DeleteStudent" asp-controller="Admin" asp-route-studentId="@item.Id" method="post" onsubmit="return confirm('Are you sure?');">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+
+            </td>
         </tr>
     }
 
@@ -62,6 +70,7 @@
         <th>phone Number </th>
         <th>Addres </th>
         <th>Courses Teached</th>
+        <th>Delete Teacher </th>
     </tr>
     @foreach (var item in Model.Teachers)
     {
@@ -87,6 +96,12 @@
                 {
                     <span>No Courses</span>
                 }
+
+            </td>
+            <td>
+                <form asp-action="DeleteTeacher" asp-controller="Admin" asp-route-Id="@item.Id" method="post" onsubmit="return confirm('Are you sure?');">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
 
             </td>
         </tr>

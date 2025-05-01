@@ -53,6 +53,20 @@ namespace final_project.Controllers
             return RedirectToAction("ShowAllStudents");
         
         }
+        [HttpPost]
+        public IActionResult DeleteStudent(int studentId)
+        {
+            var student = context.Students.Find(studentId);
+
+            if (student == null)
+            {
+                return NotFound();
+            }
+
+            context.Students.Remove(student);
+            context.SaveChanges();
+            return RedirectToAction("ShowAllStudents");
+        }
 
         public IActionResult creatTeacher()
         {
@@ -107,6 +121,26 @@ namespace final_project.Controllers
         }
 
 
+        public IActionResult DeleteTeacher(int Id)
+        {
+            var teacher = context.Teachers
+                .Include(t => t.Courses)
+                .FirstOrDefault(t => t.Id == Id);
+
+            if (teacher == null)
+                return NotFound();
+
+           
+            foreach (var course in teacher.Courses)
+            {
+                course.TeacherId = null;
+            }
+
+            context.Teachers.Remove(teacher);
+            context.SaveChanges();
+
+            return RedirectToAction("ShowAllStudents");
+        }
 
 
 
