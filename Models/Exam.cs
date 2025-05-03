@@ -12,6 +12,10 @@ namespace final_project.Models
 
         public DateTime ExamDate { get; set; }
         public string Location { get; set; }
+
+        public string ExamName { get; set; }
+
+        public ICollection<ExamResult> ExamResults { get; set; }
     }
 
 }

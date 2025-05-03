@@ -1,0 +1,28 @@
+﻿@model final_project.Models.Student
+
+<h2>Student Profile</h2>
+
+<table class="table">
+    <tr>
+        <th>Name</th>
+        <td>@Model.FullName</td>
+    </tr>
+    <tr>
+        <th>Email</th>
+        <td>@Model.Email</td>
+    </tr>
+    <tr>
+        <th>Phone</th>
+        <td>@Model.phoneNumber</td>
+    </tr>
+    <tr>
+        <th>Address</th>
+        <td>@Model.addres</td>
+    </tr>
+    <tr>
+        <th>Created At</th>
+        <td>@Model.CreatedAt.ToString("yyyy-MM-dd")</td>
+    </tr>
+</table>
+
+<a href="/Student/EditProfile" class="btn btn-primary">Edit Profile</a>

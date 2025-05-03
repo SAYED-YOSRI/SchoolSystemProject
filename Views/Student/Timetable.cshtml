@@ -1,0 +1,25 @@
+﻿@model List<final_project.Models.TimetableEntry>
+
+<h2>My Weekly Timetable</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Course</th>
+            <th>Day</th>
+            <th>Start</th>
+            <th>End</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var entry in Model)
+        {
+            <tr>
+                <td>@entry.Course.Title</td>
+                <td>@entry.Day</td>
+                <td>@entry.StartTime.ToString(@"hh\:mm")</td>
+                <td>@entry.EndTime.ToString(@"hh\:mm")</td>
+            </tr>
+        }
+    </tbody>
+</table>

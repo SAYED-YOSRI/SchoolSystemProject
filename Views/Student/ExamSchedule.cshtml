@@ -1,0 +1,27 @@
+﻿@model List<final_project.Models.Exam>
+
+<h2>My Exam Schedule</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Course</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Location</th>
+            <th>Exam</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var exam in Model)
+        {
+            <tr>
+                <td>@exam.Course.Title</td>
+                <td>@exam.ExamDate.ToShortDateString()</td>
+                <td>@exam.ExamDate.ToString("hh:mm tt")</td>
+                <td>@exam.Location</td>
+                <td>@exam.ExamName</td>
+            </tr>
+        }
+    </tbody>
+</table>
