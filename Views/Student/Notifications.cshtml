@@ -1,0 +1,25 @@
+﻿@model List<final_project.Models.Notification>
+
+<h2>Notifications</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Message</th>
+            <th>Sent At</th>
+            <th>Sent By</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var n in Model)
+        {
+            <tr>
+                <td>@n.Message</td>
+                <td>@n.SentAt.ToString("yyyy-MM-dd HH:mm")</td>
+                <td>@(n.Admin != null ? n.Admin.FullName : "System")</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a href="/Student/Notifications" class="btn btn-outline-info">View Notifications</a>

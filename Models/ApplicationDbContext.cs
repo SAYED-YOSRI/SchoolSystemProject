@@ -9,11 +9,16 @@ namespace final_project.Models
         {
 
         }
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        : base(options)
+        {
+        }
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.
-                UseSqlServer("Data Source=DESKTOP-SJ3LJPK\\MSSQLSERVERR;Initial Catalog=SchoolSystemDB;Integrated Security=True;Encrypt=False");
+                UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=SchoolSystemDB;Trusted_Connection=True;Encrypt=False");
             base.OnConfiguring(optionsBuilder);
         }
 
@@ -30,6 +35,7 @@ namespace final_project.Models
 
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<NotificationRecipient> NotificationRecipients { get; set; }
+        public DbSet<ExamResult> ExamResults { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -48,6 +54,28 @@ namespace final_project.Models
                 .WithMany(d => d.Courses)
                 .HasForeignKey(c => c.DepartmentId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // ExamResult -> Exam relation (No Cascade Delete to prevent multiple cascade paths)
+            modelBuilder.Entity<ExamResult>()
+                .HasOne(er => er.Exam)
+                .WithMany(e => e.ExamResults)
+                .HasForeignKey(er => er.ExamId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // ExamResult -> Enrollment relation (keep cascade if needed)
+            modelBuilder.Entity<ExamResult>()
+                .HasOne(er => er.Enrollment)
+                .WithMany(en => en.ExamResults)
+                .HasForeignKey(er => er.EnrollmentId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Precision for MarksObtained
+            modelBuilder.Entity<ExamResult>()
+                .Property(er => er.MarksObtained)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<ExamResult>()
+                .HasKey(er => new { er.ExamId, er.EnrollmentId });
         }
 
 

@@ -16,6 +16,8 @@ namespace final_project.Models
         public Course Course { get; set; }
 
         public Grade? Grade { get; set; }
+
+        public ICollection<ExamResult> ExamResults { get; set; }
     }
 
 }
