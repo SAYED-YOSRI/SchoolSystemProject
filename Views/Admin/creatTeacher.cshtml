@@ -1,0 +1,56 @@
+﻿@model Teacher
+@using final_project.Models
+@{
+    ViewData["Title"] = "Create Teacher";
+}
+
+<h1>Create Teacher</h1>
+
+
+<form method="post" action="/Admin/saveCreateTeacher">
+    <div class="form-group mb-3">
+        <label>Full Name</label>
+        <input name="FullName" value="@Model?.FullName" type="text" required class="form-control" />
+    </div>
+
+    <div class="form-group mb-3">
+        <label>Email</label>
+        <input name="Email" value="@Model?.Email" type="email" required class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label>Password</label>
+        <input name="Password" value="@Model?.password" type="password" required class="form-control" />
+    </div>
+
+    <div class="form-group mb-3">
+        <label>Address</label>
+        <input name="addres" value="@Model?.addres" type="text" required class="form-control" />
+    </div>
+
+    <div class="form-group mb-3">
+        <label>Phone Number</label>
+        <input name="PhoneNumber" value="@Model?.phoneNumber" type="text" required class="form-control" />
+    </div>
+
+    <input name="CreatedAt" value="@Model?.CreatedAt.ToString("yyyy-MM-dd")" type="hidden" />
+
+    <div class="form-group mb-3">
+        <label>Department Id</label>
+        <input name="DepartmentId" value="@Model?.DepartmentId" type="number" required class="form-control" />
+    </div>
+
+    <div class="form-group mb-4">
+        <label>Select Course(s)</label>
+        <select name="SelectedCourseIds[]" multiple class="form-control">
+            @foreach (var course in ViewBag.Courses as List<SelectListItem>)
+            {
+                <option value="@course.Value">@course.Text</option>
+            }
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create</button>
+</form>
+
