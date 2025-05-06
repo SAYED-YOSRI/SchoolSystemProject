@@ -10,8 +10,7 @@ namespace final_project.Models
         public Department Department { get; set; }
 
         public List<Course> Courses { get; set; }
-        public string Username { get; set; }
-        public string Password { get; set; }
+        
         public int TeacherId { get; set; }
 
     }
