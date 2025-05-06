@@ -34,7 +34,7 @@
                     <td>@exams[i].Location</td>
                     <td>
                         <a asp-action="EditExam" asp-route-id="@exams[i].ExamId" class="btn btn-primary btn-sm">Edit</a>
-                        <form asp-action="DeleteExam" asp-route-id="@exams[i].ExamId" method="post" style="display:inline;">
+                        <form asp-action="DeleteExam" asp-route-id="@exams[i].ExamId" method="post" style="display:inline;" onsubmit="return confirm('Are you sure?');">
                             <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                         </form>
                     </td>

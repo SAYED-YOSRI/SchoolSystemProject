@@ -36,7 +36,7 @@
                                 <div>
                                     @session |
                                     <a asp-action="EditTimetable" asp-route-id="@id">Edit</a>
-                                    <form asp-action="Delete" asp-route-id="@id" method="post" style="display:inline;">
+                                    <form asp-action="Delete" asp-route-id="@id" method="post" style="display:inline;" onsubmit="return confirm('Are you sure?');">
                                         <button type="submit" class="btn btn-link p-0 m-0">Delete</button>
                                     </form>
                                 </div>

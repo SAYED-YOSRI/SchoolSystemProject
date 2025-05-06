@@ -79,23 +79,45 @@ namespace final_project.Controllers
         [HttpPost]
         public IActionResult EditStudent(Student updatedStudent)
         {
-            if (updatedStudent == null)
+            if (updatedStudent != null)
+            {
+                if (context.Students.Any(s => s.Email == updatedStudent.Email))
+                {
+                    ModelState.AddModelError("Email", "The email is already in use by another student.");
+                    return View(updatedStudent);
+                }
+
+
+                var student = context.Students.FirstOrDefault(s => s.Id == updatedStudent.Id);
+                if (student == null)
+                    return NotFound();
+
+                student.FullName = updatedStudent.FullName;
+                student.Email = updatedStudent.Email;
+                student.password = updatedStudent.password;
+                student.phoneNumber = updatedStudent.phoneNumber;
+                student.addres = updatedStudent.addres;
+
+                context.SaveChanges();
+            }
+            
+            return RedirectToAction("ShowAllStudents");
+        }
+        public IActionResult ShowStudentCourses(int id)
+        {
+            var student = context.Students
+                .Include(s => s.Enrollments)
+                .ThenInclude(e => e.Course)
+                .ThenInclude(c => c.Teacher) // Include the Teacher navigation property
+                .FirstOrDefault(s => s.Id == id);
+
+            if (student == null)
             {
                 return NotFound();
             }
 
-            var student = context.Students.FirstOrDefault(s => s.Id == updatedStudent.Id);
-            if (student == null)
-                return NotFound();
-
-            student.FullName = updatedStudent.FullName;
-            student.Email = updatedStudent.Email;
-            student.password = updatedStudent.password;
-            student.phoneNumber = updatedStudent.phoneNumber;
-            student.addres = updatedStudent.addres;
-
-            context.SaveChanges();
-            return RedirectToAction("ShowAllStudents");
+            var courses = student.Enrollments.Select(e => e.Course).ToList();
+            return View(courses);
         }
         public IActionResult ViewEnrolledStudents(int courseId)
         {
@@ -163,6 +185,21 @@ namespace final_project.Controllers
             return RedirectToAction("ShowAllStudents");
         }
 
+        public IActionResult ShowTeacherCourses(int id)
+        {
+            var teacher = context.Teachers
+                .Include(t => t.Courses)
+                .FirstOrDefault(t => t.Id == id);
+
+            if (teacher == null)
+            {
+                return NotFound();
+            }
+
+            var courses = teacher.Courses.ToList();
+            return View(courses);
+        }
+
 
         public IActionResult DeleteTeacher(int Id)
         {
@@ -200,22 +237,28 @@ namespace final_project.Controllers
 
         public IActionResult EditTeacher(Teacher updatedTeacher)
         {
-            if (updatedTeacher == null)
+            
+            if (updatedTeacher != null)
             {
-                return NotFound();
+                if (context.Students.Any(s => s.Email == updatedTeacher.Email))
+                {
+                    ModelState.AddModelError("Email", "The email is already in use by another student.");
+                    return View(updatedTeacher);
+                }
+
+                var teacher = context.Teachers.FirstOrDefault(t => t.Id == updatedTeacher.Id);
+                if (teacher == null)
+                    return NotFound();
+
+                teacher.FullName = updatedTeacher.FullName;
+                teacher.Email = updatedTeacher.Email;
+                teacher.password = updatedTeacher.password;
+                teacher.phoneNumber = updatedTeacher.phoneNumber;
+                teacher.addres = updatedTeacher.addres;
+
+                context.SaveChanges();
             }
 
-            var teacher = context.Teachers.FirstOrDefault(t => t.Id == updatedTeacher.Id);
-            if (teacher == null)
-                return NotFound();
-
-            teacher.FullName = updatedTeacher.FullName;
-            teacher.Email = updatedTeacher.Email;
-            teacher.password = updatedTeacher.password;
-            teacher.phoneNumber = updatedTeacher.phoneNumber;
-            teacher.addres = updatedTeacher.addres;
-
-            context.SaveChanges();
             return RedirectToAction("ShowAllStudents");
         }
         public IActionResult ShowAllCourses()
@@ -497,5 +540,6 @@ namespace final_project.Controllers
 
             return RedirectToAction("ShowExamTimetable");
         }
+
     }
 }

@@ -1,0 +1,35 @@
+﻿@model List<Course>
+
+@{
+    ViewData["Title"] = "Student Courses";
+}
+
+<h1>Student Courses</h1>
+
+<table class="table table-hover table-bordered">
+    <tr>
+        <th>Course Id</th>
+        <th>Course Name</th>
+        <th>Teacher Name </th>
+    </tr>
+    @if (Model != null && Model.Any())
+    {
+        foreach (var course in Model)
+        {
+            <tr>
+                <td>@course.CourseId</td>
+                <td>@course.Title</td>
+                <td>@(course.Teacher != null ? course.Teacher.FullName : "No teacher assigned")</td>
+            </tr>
+        }
+    }
+    else
+    {
+        <tr>
+            <td colspan="3">No courses available.</td>
+        </tr>
+    }
+</table>
+
+<a asp-action="ShowAllStudents" class="btn btn-secondary">Back to Students</a>
+
