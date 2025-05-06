@@ -1,0 +1,29 @@
+﻿@model Course
+@{
+    ViewData["Title"] = "ViewEnrolledStudents";
+}
+
+<h2>Students Who Enrolled In Course : @Model.Title</h2>
+
+@if (Model.Enrollments != null && Model.Enrollments.Any())
+{
+    <table class="table table-bordered">
+        <tr>
+            <th>Student Name</th>
+            <th>Email</th>
+        </tr>
+        @foreach (var enrollment in Model.Enrollments)
+        {
+            <tr>
+                <td>@enrollment.Student.FullName</td>
+                <td>@enrollment.Student.Email</td>
+            </tr>
+        }
+    </table>
+}
+else
+{
+    <p>No Enrolled Students In This Course</p>
+}
+
+

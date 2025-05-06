@@ -12,8 +12,8 @@ using final_project.Models;
 namespace final_project.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250430141554_MakeTeacherIdNullable")]
-    partial class MakeTeacherIdNullable
+    [Migration("20250505124910_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -281,13 +281,13 @@ namespace final_project.Migrations
                     b.ToTable("Teachers");
                 });
 
-            modelBuilder.Entity("final_project.Models.TimetableEntry", b =>
+            modelBuilder.Entity("final_project.Models.Timetable", b =>
                 {
-                    b.Property<int>("TimetableEntryId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TimetableEntryId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("CourseId")
                         .HasColumnType("int");
@@ -298,12 +298,21 @@ namespace final_project.Migrations
                     b.Property<TimeSpan>("EndTime")
                         .HasColumnType("time");
 
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<TimeSpan>("StartTime")
                         .HasColumnType("time");
 
-                    b.HasKey("TimetableEntryId");
+                    b.Property<int>("TeacherId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("CourseId");
+
+                    b.HasIndex("TeacherId");
 
                     b.ToTable("Timetables");
                 });
@@ -395,7 +404,7 @@ namespace final_project.Migrations
                     b.Navigation("Department");
                 });
 
-            modelBuilder.Entity("final_project.Models.TimetableEntry", b =>
+            modelBuilder.Entity("final_project.Models.Timetable", b =>
                 {
                     b.HasOne("final_project.Models.Course", "Course")
                         .WithMany("Timetable")
@@ -403,7 +412,15 @@ namespace final_project.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("final_project.Models.Teacher", "Teacher")
+                        .WithMany("timetables")
+                        .HasForeignKey("TeacherId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Course");
+
+                    b.Navigation("Teacher");
                 });
 
             modelBuilder.Entity("final_project.Models.Admin", b =>
@@ -442,6 +459,8 @@ namespace final_project.Migrations
             modelBuilder.Entity("final_project.Models.Teacher", b =>
                 {
                     b.Navigation("Courses");
+
+                    b.Navigation("timetables");
                 });
 #pragma warning restore 612, 618
         }

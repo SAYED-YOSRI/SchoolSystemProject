@@ -1,0 +1,54 @@
+﻿@using final_project.ViewModels
+@model IEnumerable<TimetableViewModel>
+@{
+    ViewData["Title"] = "Unified School Timetable";
+    var days = Enum.GetValues(typeof(DayOfWeek)).Cast<DayOfWeek>();
+}
+
+<h2>School Timetable</h2>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Course</th>
+            <th>Teacher</th>
+            @foreach (var day in days)
+            {
+                <th>@day</th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var course in Model)
+        {
+            <tr>
+                <td>@course.CourseTitle</td>
+                <td>@course.TeacherName</td>
+                @foreach (var day in days)
+                {
+                    <td>
+                        @if (course.Schedule.ContainsKey(day))
+                        {
+                            for (int i = 0; i < course.Schedule[day].Count; i++)
+                            {
+                                var session = course.Schedule[day][i];
+                                var id = course.EntryIds[day][i];
+                                <div>
+                                    @session |
+                                    <a asp-action="EditTimetable" asp-route-id="@id">Edit</a>
+                                    <form asp-action="Delete" asp-route-id="@id" method="post" style="display:inline;">
+                                        <button type="submit" class="btn btn-link p-0 m-0">Delete</button>
+                                    </form>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <span>-</span>
+                        }
+                    </td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>

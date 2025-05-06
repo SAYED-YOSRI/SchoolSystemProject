@@ -12,15 +12,14 @@
         <th>Id</th>
         <th>Full Name</th>
         <th>Email</th>
-        <th>password </th>
-        <th>phone Number </th>
-        <th>Addres </th>
+        <th>password</th>
+        <th>phone Number</th>
+        <th>Address</th>
         <th>Courses</th>
-        <th>Delete Student </th>
+        <th>Actions</th>
     </tr>
     @foreach (var item in Model.Students)
     {
-
         <tr>
             <td>@item.Id</td>
             <td>@item.FullName</td>
@@ -29,35 +28,29 @@
             <td>@item.phoneNumber</td>
             <td>@item.addres</td>
             <td>
-                @if (item.Enrollments != null && item.Enrollments.Any() )
+                @if (item.Enrollments != null && item.Enrollments.Any())
                 {
-                    <select class="form-control" >
-                            @foreach (var enrollment in item.Enrollments)
-                            {
-                                <option>@enrollment.Course.Title</option>
-                            }
-                    </select>
+                    <span>@item.Enrollments.Count()</span>
+                    <a asp-controller="Admin" asp-action="ShowStudentCourses" asp-route-id="@item.Id" class="btn btn-link">View</a>
                 }
                 else
                 {
                     <span>No Courses</span>
                 }
-                
             </td>
-
             <td>
-                <form asp-action="DeleteStudent" asp-controller="Admin" asp-route-studentId="@item.Id" method="post" onsubmit="return confirm('Are you sure?');">
+                <form asp-action="DeleteStudent" asp-controller="Admin" asp-route-studentId="@item.Id" method="post" onsubmit="return confirm('Are you sure?');" style="display:inline-block">
                     <button type="submit" class="btn btn-danger">Delete</button>
                 </form>
-
+                <a asp-action="EditStudent" asp-controller="Admin" asp-route-id="@item.Id" class="btn btn-primary">Edit</a>
             </td>
         </tr>
     }
-
 </table>
 
-<a href="/Admin/createStudent" class="btn btn-success"> Add Student </a>
+<a href="/Admin/createStudent" class="btn btn-success">Add Student</a>
 
+<hr />
 
 <h1>All Teachers </h1>
 
@@ -66,15 +59,14 @@
         <th>Id</th>
         <th>Full Name</th>
         <th>Email</th>
-        <th>password </th>
-        <th>phone Number </th>
-        <th>Addres </th>
+        <th>password</th>
+        <th>phone Number</th>
+        <th>Address</th>
         <th>Courses Teached</th>
-        <th>Delete Teacher </th>
+        <th>Actions</th>
     </tr>
     @foreach (var item in Model.Teachers)
     {
-
         <tr>
             <td>@item.Id</td>
             <td>@item.FullName</td>
@@ -85,31 +77,22 @@
             <td>
                 @if (item.Courses != null && item.Courses.Any())
                 {
-                    <select class="form-control">
-                        @foreach (var course in item.Courses)
-                        {
-                            <option>@course.Title</option>
-                        }
-                    </select>
+                    <span>@item.Courses.Count()</span>
+                    <a asp-controller="Admin" asp-action="ShowTeacherCourses" asp-route-id="@item.Id" class="btn btn-link">View</a>
                 }
                 else
                 {
                     <span>No Courses</span>
                 }
-
             </td>
             <td>
-                <form asp-action="DeleteTeacher" asp-controller="Admin" asp-route-Id="@item.Id" method="post" onsubmit="return confirm('Are you sure?');">
+                <form asp-action="DeleteTeacher" asp-controller="Admin" asp-route-Id="@item.Id" method="post" onsubmit="return confirm('Are you sure?');" style="display:inline-block">
                     <button type="submit" class="btn btn-danger">Delete</button>
                 </form>
-
+                <a asp-action="EditTeacher" asp-controller="Admin" asp-route-id="@item.Id" class="btn btn-primary">Edit</a>
             </td>
         </tr>
     }
-
 </table>
 
-<a href="/Admin/creatTeacher" class="btn btn-success"> Add Teacher </a>
-
-
-
+<a href="/Admin/creatTeacher" class="btn btn-success">Add Teacher</a>

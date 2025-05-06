@@ -1,0 +1,23 @@
+﻿@model Exam
+@{
+    ViewData["Title"] = "Create Exam";
+}
+
+<h2>Create Exam</h2>
+
+<form asp-action="CreateExam" method="post">
+    <div class="form-group">
+        <label asp-for="CourseId"></label>
+        <select asp-for="CourseId" asp-items="ViewBag.Courses" class="form-control"></select>
+    </div>
+    <div class="form-group">
+        <label asp-for="ExamDate"></label>
+        <input asp-for="ExamDate" type="date" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Location"></label>
+        <input asp-for="Location" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="ShowExamTimetable" class="btn btn-secondary">Cancel</a>
+</form>

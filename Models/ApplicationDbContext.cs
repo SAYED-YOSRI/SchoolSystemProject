@@ -26,7 +26,7 @@ namespace final_project.Models
         public DbSet<Enrollment> Enrollments { get; set; }
 
         public DbSet<Exam> Exams { get; set; }
-        public DbSet<TimetableEntry> Timetables { get; set; }
+        public DbSet<Timetable> Timetables { get; set; }
 
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<NotificationRecipient> NotificationRecipients { get; set; }

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace final_project.Models
 {
@@ -10,7 +11,10 @@ namespace final_project.Models
         public int CourseId { get; set; }
         public Course Course { get; set; }
 
+        [DataType(DataType.Date)]
         public DateTime ExamDate { get; set; }
+
+        [Required]
         public string Location { get; set; }
     }
 

@@ -1,0 +1,16 @@
+﻿@model Exam
+@{
+    ViewData["Title"] = "Delete Exam";
+}
+
+<h2>Delete Exam</h2>
+
+<p><strong>Course:</strong> @Model.Course.Title</p>
+<p><strong>Date:</strong> @Model.ExamDate.ToString("dd/MM/yyyy")</p>
+<p><strong>Location:</strong> @Model.Location</p>
+
+<form method="post">
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="ShowExamTimetable" class="btn btn-secondary">Cancel</a>
+</form>
+

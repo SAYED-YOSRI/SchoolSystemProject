@@ -54,3 +54,14 @@
     <button type="submit" class="btn btn-primary">Create</button>
 </form>
 
+<script>
+    document.querySelector('form').addEventListener('submit', function (e) {
+        const name = document.getElementById('FullName').value;
+        const nameRegex = /^[\p{L}\s]+$/u;
+
+        if (!nameRegex.test(name)) {
+            e.preventDefault();
+            alert("⚠ The name must contain only letters, no numbers.  .");
+        }
+    });
+</script>

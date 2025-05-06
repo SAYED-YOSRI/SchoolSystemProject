@@ -1,0 +1,55 @@
+﻿@model List<Course>
+@{
+    ViewData["Title"] = "ShowAllCourses";
+}
+
+<h1>ShowAllCourses</h1>
+
+<table class="table table-hover table-bordered">
+    <tr>
+        <th>Course Id</th>
+        <th>Course Title</th>
+        <th>Teacher Name</th>
+        <th>Department Name </th>
+        <th>Enrollments</th>
+        <th>Delete Course </th>
+
+    </tr>
+    @foreach (var item in Model)
+    {
+
+        <tr>
+            <td>@item.CourseId</td>
+            <td>@item.Title</td>
+            <td>@item.Teacher.FullName</td>
+            <td>@item.Department.Name</td>
+
+            <td>
+                @if (item.Enrollments != null && item.Enrollments.Any())
+                {
+                    <span>@item.Enrollments.Count Student(s)</span>
+                    <a class="btn btn-info btn-sm"
+                       href="@Url.Action("ViewEnrolledStudents", "Admin", new { courseId = item.CourseId })"
+                       style="margin-left:10px;">
+                        Show Enrollments 
+                    </a>
+                }
+                else
+                {
+                    <span>No Enrollments Yet</span>
+                }
+            </td>
+
+            <td>
+                <form asp-action="DeleteCourse" asp-controller="Admin" asp-route-id="@item.CourseId" method="post" onsubmit="return confirm('Are you sure?');">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+
+            </td>
+
+        </tr>
+    }
+
+</table>
+
+<a href="/Admin/createCourse" class="btn btn-success"> Add Course </a>

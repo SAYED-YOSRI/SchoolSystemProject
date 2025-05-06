@@ -9,6 +9,8 @@ namespace final_project.Models
         public Department Department { get; set; }
 
         public List<Course> Courses { get; set; }
+
+        public List<Timetable> timetables { get; set; }
     }
 
 }

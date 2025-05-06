@@ -17,7 +17,7 @@ namespace final_project.Models
 
         public List<Enrollment> Enrollments { get; set; }
         public List<Exam> Exams { get; set; }
-        public List<TimetableEntry> Timetable { get; set; }
+        public List<Timetable> Timetable { get; set; }
     }
 
 }
