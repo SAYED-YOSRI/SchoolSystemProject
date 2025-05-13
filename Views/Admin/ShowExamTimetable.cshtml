@@ -1,13 +1,14 @@
-﻿@{
+﻿
+@{
     ViewData["Title"] = "Exam Timetable";
 }
 
-<h2>Exam Timetable</h2>
+
 
 <a asp-action="CreateExam" class="btn btn-success mb-3">Create New Exam</a>
 
-<table class="table">
-    <thead>
+<table class="table table-hover table-bordered">
+    <thead class="table-dark">
         <tr>
             <th>Day</th>
             <th>Course</th>
@@ -22,19 +23,19 @@
             var exams = group.Exams;
             var rowspan = exams.Count;
 
-            for (int i = 0; i < exams.Count; i++)
+            for (int i = 0; i < rowspan; i++)
             {
                 <tr>
                     @if (i == 0)
                     {
-                        <td rowspan="@rowspan">@group.Day</td>
+                        <td rowspan="@rowspan" class="align-middle fw-bold">@group.Day</td>
                     }
                     <td>@exams[i].CourseTitle</td>
-                    <td>@exams[i].ExamDate.ToShortDateString()</td>
+                    <td>@exams[i].ExamDate.ToString("dd/MM/yyyy")</td>
                     <td>@exams[i].Location</td>
                     <td>
                         <a asp-action="EditExam" asp-route-id="@exams[i].ExamId" class="btn btn-primary btn-sm">Edit</a>
-                        <form asp-action="DeleteExam" asp-route-id="@exams[i].ExamId" method="post" style="display:inline;" onsubmit="return confirm('Are you sure?');">
+                        <form asp-action="DeleteExam" asp-route-id="@exams[i].ExamId" method="post" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this exam?');">
                             <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                         </form>
                     </td>

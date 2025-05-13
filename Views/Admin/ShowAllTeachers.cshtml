@@ -1,8 +1,7 @@
-﻿@model List<Student>
+﻿@model List<Teacher>
 @{
-    ViewData["Title"] = "Show All Students";
+    ViewData["Title"] = "Show All Teachers";
 }
-
 
 
 <table class="table table-hover table-bordered">
@@ -14,7 +13,7 @@
             <th>Password</th>
             <th>Phone Number</th>
             <th>Address</th>
-            <th>Courses</th>
+            <th>Courses Teached</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -29,10 +28,10 @@
                 <td>@item.phoneNumber</td>
                 <td>@item.addres</td>
                 <td>
-                    @if (item.Enrollments != null && item.Enrollments.Any())
+                    @if (item.Courses != null && item.Courses.Any())
                     {
-                        <span>@item.Enrollments.Count()</span>
-                        <a asp-controller="Admin" asp-action="ShowStudentCourses" asp-route-id="@item.Id" class="btn btn-info btn-sm ms-2">View</a>
+                        <span>@item.Courses.Count()</span>
+                        <a asp-controller="Admin" asp-action="ShowTeacherCourses" asp-route-id="@item.Id" class="btn btn-info btn-sm ms-2">View</a>
                     }
                     else
                     {
@@ -40,14 +39,14 @@
                     }
                 </td>
                 <td>
-                    <form asp-action="DeleteStudent" asp-controller="Admin" asp-route-studentId="@item.Id" method="post" onsubmit="return confirm('Are you sure?');" style="display:inline">
+                    <form asp-action="DeleteTeacher" asp-controller="Admin" asp-route-Id="@item.Id" method="post" onsubmit="return confirm('Are you sure?');" style="display:inline">
                         <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                     </form>
-                    <a asp-action="EditStudent" asp-controller="Admin" asp-route-id="@item.Id" class="btn btn-primary btn-sm">Edit</a>
+                    <a asp-action="EditTeacher" asp-controller="Admin" asp-route-id="@item.Id" class="btn btn-primary btn-sm">Edit</a>
                 </td>
             </tr>
         }
     </tbody>
 </table>
 
-<a href="/Admin/createStudent" class="btn btn-success">Add Student</a>
+<a href="/Admin/creatTeacher" class="btn btn-success">Add Teacher</a>

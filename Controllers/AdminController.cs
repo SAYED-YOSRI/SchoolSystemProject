@@ -1,40 +1,54 @@
 ﻿using final_project.Models;
 using final_project.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 
 namespace final_project.Controllers
 {
+    [Authorize]
     public class AdminController : Controller
     {
 
-        ApplicationDbContext context = new ApplicationDbContext();
+        private readonly ApplicationDbContext _context;
+
+        public AdminController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+        [Authorize(Roles = "Admin")]
         public IActionResult ShowAllStudents()
         {
-            StudentTeacherListsVM viewModel = new StudentTeacherListsVM()
-            {
-                Students = context.Students
-            .Include(s => s.Enrollments)
-            .ThenInclude(e => e.Course)
-            .ToList(),
+            List<Student> students = _context.Students
+                .Include(s => s.Enrollments)
+                .ThenInclude(e => e.Course)
+                .ToList();
+           
 
-                Teachers = context.Teachers.ToList()
-            };
-
-            return View("ShowAllStudents", viewModel);
+            return View("ShowAllStudents", students);
         }
-
+        [Authorize(Roles = "Admin")]
+        public IActionResult ShowAllTeachers()
+        {
+            List<Teacher> teachers = _context.Teachers
+                .Include(t => t.Courses)
+                .ThenInclude(c => c.Department)
+                .ToList();
+            return View("ShowAllTeachers", teachers);
+        }
+        [Authorize(Roles = "Admin")]
         public IActionResult createStudent()
         {
             return View("createStudent");
         }
-
+        [Authorize(Roles = "Admin")]
         public IActionResult saveCreate(Student student)
         {
             if (student != null)
             {
-                var exist = context.Students.Any(s => s.Email == student.Email);
+                var exist = _context.Students.Any(s => s.Email == student.Email);
 
                 if (exist)
                 {
@@ -44,8 +58,8 @@ namespace final_project.Controllers
                 }
                 else
                 {
-                    context.Students.Add(student);
-                    context.SaveChanges();
+                    _context.Students.Add(student);
+                    _context.SaveChanges();
                 }
 
             }
@@ -53,42 +67,45 @@ namespace final_project.Controllers
             return RedirectToAction("ShowAllStudents");
 
         }
-
+        [Authorize(Roles = "Admin")]
         public IActionResult DeleteStudent(int studentId)
         {
-            var student = context.Students.Find(studentId);
+            var student = _context.Students.Find(studentId);
 
             if (student == null)
             {
                 return NotFound();
             }
 
-            context.Students.Remove(student);
-            context.SaveChanges();
+            _context.Students.Remove(student);
+            _context.SaveChanges();
             return RedirectToAction("ShowAllStudents");
         }
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public IActionResult EditStudent(int id)
         {
-            var student = context.Students.FirstOrDefault(s => s.Id == id);
+            var student = _context.Students.FirstOrDefault(s => s.Id == id);
             if (student == null)
                 return NotFound();
 
             return View(student);
         }
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public IActionResult EditStudent(Student updatedStudent)
         {
             if (updatedStudent != null)
             {
-                if (context.Students.Any(s => s.Email == updatedStudent.Email))
+                var email = _context.Students.Select(s => s.Email).FirstOrDefault();
+                if (_context.Students.Any(s => s.Email == updatedStudent.Email) && updatedStudent.Email != email )
                 {
                     ModelState.AddModelError("Email", "The email is already in use by another student.");
                     return View(updatedStudent);
                 }
 
 
-                var student = context.Students.FirstOrDefault(s => s.Id == updatedStudent.Id);
+                var student = _context.Students.FirstOrDefault(s => s.Id == updatedStudent.Id);
                 if (student == null)
                     return NotFound();
 
@@ -98,14 +115,15 @@ namespace final_project.Controllers
                 student.phoneNumber = updatedStudent.phoneNumber;
                 student.addres = updatedStudent.addres;
 
-                context.SaveChanges();
+                _context.SaveChanges();
             }
             
             return RedirectToAction("ShowAllStudents");
         }
+        [Authorize(Roles = "Admin")]
         public IActionResult ShowStudentCourses(int id)
         {
-            var student = context.Students
+            var student = _context.Students
                 .Include(s => s.Enrollments)
                 .ThenInclude(e => e.Course)
                 .ThenInclude(c => c.Teacher) // Include the Teacher navigation property
@@ -119,9 +137,10 @@ namespace final_project.Controllers
             var courses = student.Enrollments.Select(e => e.Course).ToList();
             return View(courses);
         }
+        [Authorize(Roles = "Admin")]
         public IActionResult ViewEnrolledStudents(int courseId)
         {
-            var course = context.Courses
+            var course = _context.Courses
                 .Include(c => c.Enrollments)
                 .ThenInclude(e => e.Student)
                 .FirstOrDefault(c => c.CourseId == courseId);
@@ -133,9 +152,10 @@ namespace final_project.Controllers
 
 
         }
+        [Authorize(Roles = "Admin")]
         public IActionResult creatTeacher()
         {
-            var courses = context.Courses
+            var courses = _context.Courses
         .Select(c => new SelectListItem
         {
             Value = c.CourseId.ToString(),
@@ -148,17 +168,19 @@ namespace final_project.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public IActionResult saveCreateTeacher(Teacher teacher, List<int> SelectedCourseIds)
         {
             if (teacher != null)
             {
-                var exists = context.Teachers.Any(t => t.Email == teacher.Email);
+                var email = _context.Teachers.Select(s => s.Email).FirstOrDefault();
+                var exists = _context.Teachers.Any(t => t.Email == teacher.Email);
 
-                if (exists)
+                if (exists && teacher.Email != email)
                 {
                     ModelState.AddModelError("Email", "This Email is Already Exist");
 
-                    ViewBag.Courses = context.Courses
+                    ViewBag.Courses = _context.Courses
                         .Select(c => new SelectListItem
                         {
                             Value = c.CourseId.ToString(),
@@ -171,23 +193,23 @@ namespace final_project.Controllers
 
                 if (SelectedCourseIds != null && SelectedCourseIds.Any())
                 {
-                    var selectedCourses = context.Courses
+                    var selectedCourses = _context.Courses
                         .Where(c => SelectedCourseIds.Contains(c.CourseId))
                         .ToList();
 
                     teacher.Courses = selectedCourses;
                 }
 
-                context.Teachers.Add(teacher);
-                context.SaveChanges();
+                _context.Teachers.Add(teacher);
+                _context.SaveChanges();
             }
 
-            return RedirectToAction("ShowAllStudents");
+            return RedirectToAction("ShowAllTeachers");
         }
-
+        [Authorize(Roles = "Admin")]
         public IActionResult ShowTeacherCourses(int id)
         {
-            var teacher = context.Teachers
+            var teacher = _context.Teachers
                 .Include(t => t.Courses)
                 .FirstOrDefault(t => t.Id == id);
 
@@ -200,10 +222,10 @@ namespace final_project.Controllers
             return View(courses);
         }
 
-
+        [Authorize(Roles = "Admin")]
         public IActionResult DeleteTeacher(int Id)
         {
-            var teacher = context.Teachers
+            var teacher = _context.Teachers
                 .Include(t => t.Courses)
                 .FirstOrDefault(t => t.Id == Id);
 
@@ -216,17 +238,18 @@ namespace final_project.Controllers
                 course.TeacherId = null;
             }
 
-            context.Teachers.Remove(teacher);
-            context.SaveChanges();
+            _context.Teachers.Remove(teacher);
+            _context.SaveChanges();
 
-            return RedirectToAction("ShowAllStudents");
+            return RedirectToAction("ShowAllTeachers");
         }
 
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public IActionResult EditTeacher(int id)
         {
-            var teacher = context.Teachers.FirstOrDefault(t => t.Id == id);
+            var teacher = _context.Teachers.FirstOrDefault(t => t.Id == id);
             if (teacher == null)
                 return NotFound();
 
@@ -234,19 +257,19 @@ namespace final_project.Controllers
         }
 
         [HttpPost]
-
+        [Authorize(Roles = "Admin")]
         public IActionResult EditTeacher(Teacher updatedTeacher)
         {
             
             if (updatedTeacher != null)
             {
-                if (context.Students.Any(s => s.Email == updatedTeacher.Email))
+                if (_context.Students.Any(s => s.Email == updatedTeacher.Email))
                 {
                     ModelState.AddModelError("Email", "The email is already in use by another student.");
                     return View(updatedTeacher);
                 }
 
-                var teacher = context.Teachers.FirstOrDefault(t => t.Id == updatedTeacher.Id);
+                var teacher = _context.Teachers.FirstOrDefault(t => t.Id == updatedTeacher.Id);
                 if (teacher == null)
                     return NotFound();
 
@@ -256,14 +279,15 @@ namespace final_project.Controllers
                 teacher.phoneNumber = updatedTeacher.phoneNumber;
                 teacher.addres = updatedTeacher.addres;
 
-                context.SaveChanges();
+                _context.SaveChanges();
             }
 
-            return RedirectToAction("ShowAllStudents");
+            return RedirectToAction("ShowAllTeachers");
         }
+        [Authorize(Roles = "Admin")]
         public IActionResult ShowAllCourses()
         {
-            List<Course> courses = context.Courses
+            List<Course> courses = _context.Courses
              .Include(c => c.Enrollments)
              .ThenInclude(e => e.Student)
              .Include(t => t.Teacher)
@@ -272,17 +296,17 @@ namespace final_project.Controllers
 
             return View("ShowAllCourses", courses);
         }
-
+        [Authorize(Roles = "Admin")]
         public IActionResult CreateCourse()
         {
-            ViewBag.Teachers = context.Teachers
+            ViewBag.Teachers = _context.Teachers
                 .Select(t => new SelectListItem
                 {
                     Value = t.Id.ToString(),
                     Text = t.FullName
                 }).ToList();
 
-            ViewBag.Departments = context.Departments
+            ViewBag.Departments = _context.Departments
                 .Select(d => new SelectListItem
                 {
                     Value = d.DepartmentId.ToString(),
@@ -291,7 +315,7 @@ namespace final_project.Controllers
 
             return View("CreateCourse");
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public IActionResult SaveCreateCourse(Course course)
         {
@@ -299,21 +323,21 @@ namespace final_project.Controllers
 
             if (course != null)
             {
-                context.Courses.Add(course);
-                context.SaveChanges();
+                _context.Courses.Add(course);
+                _context.SaveChanges();
                 return RedirectToAction("ShowAllCourses");
             }
 
 
 
-            ViewBag.Teachers = context.Teachers
+            ViewBag.Teachers = _context.Teachers
                 .Select(t => new SelectListItem
                 {
                     Value = t.Id.ToString(),
                     Text = t.FullName
                 }).ToList();
 
-            ViewBag.Departments = context.Departments
+            ViewBag.Departments = _context.Departments
                 .Select(d => new SelectListItem
                 {
                     Value = d.DepartmentId.ToString(),
@@ -322,10 +346,10 @@ namespace final_project.Controllers
 
             return RedirectToAction("ShowAllCourses", course);
         }
-        
+        [Authorize(Roles = "Admin")]
         public IActionResult DeleteCourse(int id)
         {
-            var course = context.Courses
+            var course = _context.Courses
             .Include(t => t.Teacher).
              Include(d => d.Department)
             .FirstOrDefault(t => t.CourseId == id);
@@ -333,16 +357,17 @@ namespace final_project.Controllers
             if (course == null)
                 return NotFound();
 
-            context.Courses.Remove(course);
-            context.SaveChanges();
+            _context.Courses.Remove(course);
+            _context.SaveChanges();
 
             return RedirectToAction("ShowAllCourses");
 
         }
         // Timetable
+        [Authorize(Roles = "Admin")]
         public IActionResult ShowTimetable()
         {
-            var grouped = context.Timetables
+            var grouped = _context.Timetables
                 .Include(t => t.Course)
                 .Include(t => t.Teacher)
                 .ToList()
@@ -368,19 +393,20 @@ namespace final_project.Controllers
             return View(grouped);
         }
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public IActionResult EditTimetable(int id)
         {
-            var timetable = context.Timetables.Find(id);
+            var timetable = _context.Timetables.Find(id);
             if (timetable == null)
             {
                 return NotFound();
             }
 
-            ViewBag.Courses = context.Courses
+            ViewBag.Courses = _context.Courses
                 .Select(c => new SelectListItem { Value = c.CourseId.ToString(), Text = c.Title })
                 .ToList();
 
-            ViewBag.Teachers = context.Teachers
+            ViewBag.Teachers = _context.Teachers
                 .Select(t => new SelectListItem { Value = t.Id.ToString(), Text = t.FullName })
                 .ToList();
 
@@ -388,16 +414,17 @@ namespace final_project.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public IActionResult EditTimetable(Timetable entry)
         {
             if (entry == null )
             {
                 // Populate ViewBag.Courses and ViewBag.Teachers when ModelState is invalid
-                ViewBag.Courses = context.Courses
+                ViewBag.Courses = _context.Courses
                     .Select(c => new SelectListItem { Value = c.CourseId.ToString(), Text = c.Title })
                     .ToList();
 
-                ViewBag.Teachers = context.Teachers
+                ViewBag.Teachers = _context.Teachers
                     .Select(t => new SelectListItem { Value = t.Id.ToString(), Text = t.FullName })
                     .ToList();
 
@@ -405,7 +432,7 @@ namespace final_project.Controllers
             }
 
             // Update the timetable entry
-            var existingEntry = context.Timetables.Find(entry.Id);
+            var existingEntry = _context.Timetables.Find(entry.Id);
             if (existingEntry == null)
             {
                 return NotFound();
@@ -418,28 +445,29 @@ namespace final_project.Controllers
             existingEntry.EndTime = entry.EndTime;
             existingEntry.Location = entry.Location;
 
-            context.SaveChanges();
+            _context.SaveChanges();
             return RedirectToAction("ShowTimetable");
         }
 
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public IActionResult Delete(int id)
         {
-            var entry = context.Timetables.Find(id);
+            var entry = _context.Timetables.Find(id);
             if (entry == null)
                 return NotFound();
 
-            context.Timetables.Remove(entry);
-            context.SaveChanges();
+            _context.Timetables.Remove(entry);
+            _context.SaveChanges();
             return RedirectToAction("ShowTimetable");
         }
 
         //exam Timetable 
-
+        [Authorize(Roles = "Admin")]
         public IActionResult ShowExamTimetable()
         {
-            var exams = context.Exams.Include(e => e.Course).ToList();
+            var exams = _context.Exams.Include(e => e.Course).ToList();
 
             var grouped = exams
                 .GroupBy(e => e.ExamDate.DayOfWeek)
@@ -460,32 +488,33 @@ namespace final_project.Controllers
             return View(grouped);
         }
 
-       
+        [Authorize(Roles = "Admin")]
         [HttpGet("Admin/EditExam/{id}")]
         public IActionResult EditExam(int id)
         {
-            var exam = context.Exams.Find(id);
+            var exam = _context.Exams.Find(id);
             if (exam == null)
             {
                 return NotFound();
             }
 
-            ViewBag.Courses = new SelectList(context.Courses.ToList(), "CourseId", "Title", exam.CourseId);
+            ViewBag.Courses = new SelectList(_context.Courses.ToList(), "CourseId", "Title", exam.CourseId);
             return View("EditExam", exam);
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public IActionResult EditExam(Exam exam)
         {
             if (exam == null )
             {
                 // Populate ViewBag.Courses to ensure the dropdown is available
-                ViewBag.Courses = new SelectList(context.Courses.ToList(), "CourseId", "Title", exam?.CourseId);
+                ViewBag.Courses = new SelectList(_context.Courses.ToList(), "CourseId", "Title", exam?.CourseId);
                 return View("EditExam", exam);
             }
 
             // Find the existing exam entry
-            var existingExam = context.Exams.Find(exam.ExamId);
+            var existingExam = _context.Exams.Find(exam.ExamId);
             if (existingExam == null)
             {
                 return NotFound();
@@ -497,46 +526,49 @@ namespace final_project.Controllers
             existingExam.Location = exam.Location;
 
             // Save changes to the database
-            context.SaveChanges();
+            _context.SaveChanges();
             return RedirectToAction("ShowExamTimetable");
         }
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public IActionResult CreateExam()
         {
             // Populate ViewBag.Courses for the dropdown
-            ViewBag.Courses = new SelectList(context.Courses.ToList(), "CourseId", "Title");
+            ViewBag.Courses = new SelectList(_context.Courses.ToList(), "CourseId", "Title");
             return View("CreateExam");
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public IActionResult CreateExam(Exam exam)
         {
             if (exam== null)
             {
                 // Repopulate ViewBag.Courses if validation fails
-                ViewBag.Courses = new SelectList(context.Courses.ToList(), "CourseId", "Title");
+                ViewBag.Courses = new SelectList(_context.Courses.ToList(), "CourseId", "Title");
                 return View("CreateExam", exam);
             }
 
             // Add the new exam to the database
-            context.Exams.Add(exam);
-            context.SaveChanges();
+            _context.Exams.Add(exam);
+            _context.SaveChanges();
 
             // Redirect to ShowExamTimetable after successful creation
             return RedirectToAction("ShowExamTimetable");
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public IActionResult DeleteExam(int id)
         {
-            var exam = context.Exams.Find(id);
+            var exam = _context.Exams.Find(id);
             if (exam == null)
             {
                 return NotFound();
             }
 
-            context.Exams.Remove(exam);
-            context.SaveChanges();
+            _context.Exams.Remove(exam);
+            _context.SaveChanges();
 
             return RedirectToAction("ShowExamTimetable");
         }
